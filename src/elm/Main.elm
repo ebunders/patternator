@@ -2,9 +2,9 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 
 
+--import Html.Events exposing (onClick)
 -- component import example
 -- APP
 
@@ -78,31 +78,26 @@ rendergrid grid =
 
 
 renderLine : List Bool -> Html Msg
-renderLine l =
+renderLine line =
+    div [ (class "row") ] (List.indexedMap renderCell line)
+
+
+
+-- div [ (class "row") ] [ text "foo bar" ]
+
+
+renderCell : Int -> Bool -> Html Msg
+renderCell index selected =
     let
-        style bool =
-            if bool then
+        classes =
+            if selected then
                 "cell selected"
+            else if index % 4 == 0 then
+                "cell accent"
             else
                 "cell"
-
-        cells =
-            List.map (\bool -> div [ (class (style bool)) ] []) l
     in
-        div [ (class "row") ] cells
-
-
-
--- CSS STYLES
-
-
-styles : { img : List ( String, String ) }
-styles =
-    { img =
-        [ ( "width", "33%" )
-        , ( "border", "4px solid #337AB7" )
-        ]
-    }
+        div [ (class classes) ] []
 
 
 
