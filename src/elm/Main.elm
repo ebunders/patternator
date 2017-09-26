@@ -2,9 +2,9 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 
---import Html.Events exposing (onClick)
 -- component import example
 -- APP
 
@@ -48,14 +48,46 @@ type alias Note =
 
 
 type Msg
-    = NoOp
+    = ToggleSelect Int Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        ToggleSelect row col ->
+            ( { model
+                | grid = (mapGrid row col model.grid)
+              }
+            , Cmd.none
+            )
+
+
+
+-- todo these functions are too similar.
+
+
+mapGrid : Int -> Int -> List (List Bool) -> List (List Bool)
+mapGrid rowNr colNr grid =
+    List.indexedMap
+        (\i v ->
+            if i == rowNr then
+                mapRow colNr v
+            else
+                v
+        )
+        grid
+
+
+mapRow : Int -> List Bool -> List Bool
+mapRow colNr row =
+    List.indexedMap
+        (\i v ->
+            if i == colNr then
+                not v
+            else
+                v
+        )
+        row
 
 
 
@@ -74,30 +106,30 @@ view model =
 
 rendergrid : List (List Bool) -> List (Html Msg)
 rendergrid grid =
-    List.map (\l -> (renderLine l)) grid
+    List.indexedMap (\i l -> (renderLine i l)) grid
 
 
-renderLine : List Bool -> Html Msg
-renderLine line =
-    div [ (class "row") ] (List.indexedMap renderCell line)
+renderLine : Int -> List Bool -> Html Msg
+renderLine index line =
+    div [ (class "row") ] (List.indexedMap (renderCell index) line)
 
 
 
 -- div [ (class "row") ] [ text "foo bar" ]
 
 
-renderCell : Int -> Bool -> Html Msg
-renderCell index selected =
+renderCell : Int -> Int -> Bool -> Html Msg
+renderCell rowIndex colIndex selected =
     let
         classes =
             if selected then
                 "cell selected"
-            else if index % 4 == 0 then
+            else if colIndex % 4 == 0 then
                 "cell accent"
             else
                 "cell"
     in
-        div [ (class classes) ] []
+        div [ (class classes), (onClick (ToggleSelect rowIndex colIndex)) ] []
 
 
 

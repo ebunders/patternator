@@ -5,7 +5,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 // can add Boostrap overrides, additional Sass/CSS below...
 $primary-color: red;
 $fourthcell-color: orange;
-$selected-color: orange;
+$selected-color: white;
 $font-stack:    Helvetica, sans-serif;
 
 body {
@@ -24,8 +24,6 @@ body {
         width: 50px;
         display: inline-block;
         border-radius: 5px;
-
-
     }
   }
 }
