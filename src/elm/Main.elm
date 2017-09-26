@@ -25,7 +25,7 @@ main =
 
 model : Model
 model =
-    { grid = (List.repeat 8 (List.repeat 8 False)) }
+    { grid = (List.repeat 12 (List.repeat 16 False)) }
 
 
 init : ( Model, Cmd Msg )
