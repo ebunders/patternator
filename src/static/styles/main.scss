@@ -1,0 +1,27 @@
+$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
+@import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+
+// can add Boostrap overrides, additional Sass/CSS below...
+$primary-color: red;
+$font-stack:    Helvetica, sans-serif;
+
+body {
+  font-size: 20px;
+  color: $primary-color;
+  background-color: black;
+  padding: 20px;
+}
+
+.grid {
+  .row {
+    .cell{
+        border: 1px solid white;
+        margin: 3px;
+        height: 50px;
+        width: 50px;
+        display: inline-block;
+        border-radius: 5px;
+    }
+  }
+}
