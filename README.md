@@ -8,8 +8,9 @@ https://tonejs.github.io/
 [X] kolom 1, 5, 9 & 13 ander kleurtje
 [X] cellen aanklikbaar
 [ ] run! (highlight row)
-[ ] muziek
+[ ] controls: stop/start
+[ ] muziek (instrument)
 [ ] meerdere patterns
 [ ] drum of melodie pattern
 [ ] song arranger
-[ ] instrument editor
+[ ] instrument (voice) editor
