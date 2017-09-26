@@ -6,10 +6,6 @@ import Html.Events exposing (onClick)
 
 
 -- component import example
-
-import Components.Hello exposing (hello)
-
-
 -- APP
 
 
