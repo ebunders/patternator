@@ -7,7 +7,7 @@ https://tonejs.github.io/
 [X] grid: 16 x 12
 [X] kolom 1, 5, 9 & 13 ander kleurtje
 [X] cellen aanklikbaar
-[ ] run! (highlight row)
+[X] run! (highlight row)
 [ ] controls: stop/start
 [ ] muziek (instrument)
 [ ] meerdere patterns

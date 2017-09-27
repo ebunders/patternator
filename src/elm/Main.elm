@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Time
 
 
 -- component import example
@@ -25,7 +26,10 @@ main =
 
 model : Model
 model =
-    { grid = (List.repeat 12 (List.repeat 16 False)) }
+    { grid = (List.repeat 12 (List.repeat 16 False))
+    , selectedColumn = 0
+    , speedMs = 200
+    }
 
 
 init : ( Model, Cmd Msg )
@@ -34,12 +38,9 @@ init =
 
 
 type alias Model =
-    { grid : List (List Bool) }
-
-
-type alias Note =
-    { pitch : Maybe Int
-    , velocity : Maybe Int
+    { grid : List (List Bool)
+    , selectedColumn : Int
+    , speedMs : Int
     }
 
 
@@ -49,6 +50,7 @@ type alias Note =
 
 type Msg
     = ToggleSelect Int Int
+    | Tick Time.Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -60,6 +62,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Tick t ->
+            ( { model | selectedColumn = (model.selectedColumn + 1) % 16 }, Cmd.none )
 
 
 
@@ -100,29 +105,30 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Patternator" ]
-        , div [ (class "grid") ] (rendergrid model.grid)
+        , div [ (class "grid") ] (rendergrid model)
+        , hr [] []
         ]
 
 
-rendergrid : List (List Bool) -> List (Html Msg)
-rendergrid grid =
-    List.indexedMap (\i l -> (renderLine i l)) grid
+rendergrid : Model -> List (Html Msg)
+rendergrid { grid, selectedColumn } =
+    List.indexedMap (\i l -> (renderLine selectedColumn i l)) grid
 
 
-renderLine : Int -> List Bool -> Html Msg
-renderLine index line =
-    div [ (class "row") ] (List.indexedMap (renderCell index) line)
+renderLine : Int -> Int -> List Bool -> Html Msg
+renderLine selectedColumn index line =
+    div [ (class "row") ] (List.indexedMap (renderCell selectedColumn index) line)
 
 
 
 -- div [ (class "row") ] [ text "foo bar" ]
 
 
-renderCell : Int -> Int -> Bool -> Html Msg
-renderCell rowIndex colIndex selected =
+renderCell : Int -> Int -> Int -> Bool -> Html Msg
+renderCell selectedColumn rowIndex colIndex selected =
     let
         classes =
-            if selected then
+            if selected || selectedColumn == colIndex then
                 "cell selected"
             else if colIndex % 4 == 0 then
                 "cell accent"
@@ -138,4 +144,4 @@ renderCell rowIndex colIndex selected =
 
 subscriptions : Model -> Sub.Sub Msg
 subscriptions model =
-    Sub.none
+    (Time.every ((toFloat model.speedMs) * Time.millisecond) Tick)
