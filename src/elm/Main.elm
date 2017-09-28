@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Matrix exposing (Location, Matrix, loc, mapWithLocation, matrix, row)
 import Time
 
 
@@ -26,7 +27,7 @@ main =
 
 model : Model
 model =
-    { grid = (List.repeat 12 (List.repeat 16 False))
+    { grid = matrix 12 16 (\_ -> False)
     , selectedColumn = 0
     , speedMs = 200
     }
@@ -38,7 +39,7 @@ init =
 
 
 type alias Model =
-    { grid : List (List Bool)
+    { grid : Matrix Bool
     , selectedColumn : Int
     , speedMs : Int
     }
@@ -49,19 +50,23 @@ type alias Model =
 
 
 type Msg
-    = ToggleSelect Int Int
+    = ToggleSelect Location
     | Tick Time.Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ToggleSelect row col ->
-            ( { model
-                | grid = (mapGrid row col model.grid)
-              }
-            , Cmd.none
-            )
+        ToggleSelect location ->
+            let
+                newValue =
+                    not (Maybe.withDefault False (Matrix.get location model.grid))
+            in
+                ( { model
+                    | grid = Matrix.set location newValue model.grid
+                  }
+                , Cmd.none
+                )
 
         Tick t ->
             ( { model | selectedColumn = (model.selectedColumn + 1) % 16 }, Cmd.none )
@@ -112,30 +117,32 @@ view model =
 
 rendergrid : Model -> List (Html Msg)
 rendergrid { grid, selectedColumn } =
-    List.indexedMap (\i l -> (renderLine selectedColumn i l)) grid
-
-
-renderLine : Int -> Int -> List Bool -> Html Msg
-renderLine selectedColumn index line =
-    div [ (class "row") ] (List.indexedMap (renderCell selectedColumn index) line)
-
-
-
--- div [ (class "row") ] [ text "foo bar" ]
-
-
-renderCell : Int -> Int -> Int -> Bool -> Html Msg
-renderCell selectedColumn rowIndex colIndex selected =
     let
-        classes =
-            if selected || selectedColumn == colIndex then
-                "cell selected"
-            else if colIndex % 4 == 0 then
-                "cell accent"
-            else
-                "cell"
+        mapCell selectedColumn location selected =
+            let
+                row =
+                    Matrix.row location
+
+                col =
+                    Matrix.col location
+
+                classes =
+                    if selected || selectedColumn == col then
+                        "cell selected"
+                    else if col % 4 == 0 then
+                        "cell accent"
+                    else
+                        "cell"
+            in
+                div [ (class classes), (onClick (ToggleSelect location)) ] []
     in
-        div [ (class classes), (onClick (ToggleSelect rowIndex colIndex)) ] []
+        grid
+            -- transform cells to html
+            |> Matrix.mapWithLocation (mapCell selectedColumn)
+            -- create list of lists (rows)
+            |> Matrix.toList
+            -- convert rows to divs
+            |> List.map (\row -> div [ (class "row") ] row)
 
 
 
