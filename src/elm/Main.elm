@@ -31,6 +31,7 @@ initalModel =
     , selectedColumn = 0
     , bpm = 100
     , running = False
+    , blink = False
     }
 
 
@@ -44,6 +45,7 @@ type alias Model =
     , selectedColumn : Int
     , bpm : Int
     , running : Bool
+    , blink : Bool
     }
 
 
@@ -79,7 +81,19 @@ update msg model =
                 )
 
         Tick t ->
-            ( { model | selectedColumn = (model.selectedColumn + 1) % 16 }, Cmd.none )
+            let
+                newSelectedColumn =
+                    if model.running then
+                        (model.selectedColumn + 1) % 16
+                    else
+                        model.selectedColumn
+            in
+                ( { model
+                    | selectedColumn = newSelectedColumn
+                    , blink = not model.blink
+                  }
+                , Cmd.none
+                )
 
         TransportMsg msg ->
             handleTransportMsg msg model
@@ -119,13 +133,19 @@ view model =
 renderControls : Model -> List (Html Msg)
 renderControls model =
     let
+        blink =
+            if (not (model.running)) && model.blink then
+                " blink"
+            else
+                " "
+
         classes =
             if model.running then
                 "fa fa-pause"
             else
                 "fa fa-play"
     in
-        [ i [ class classes, onClick (TransportMsg ToggleTransport) ] [ text "" ]
+        [ i [ class (classes ++ blink), onClick (TransportMsg ToggleTransport) ] [ text "" ]
         , i [ class "fa fa-fast-backward", onClick (TransportMsg Rewind) ] [ text "" ]
         , div [ class "separator" ] [ text "" ]
         , i [ class "fa fa-arrow-down", onClick (TransportMsg BpmDown) ] [ text "" ]
@@ -170,10 +190,7 @@ rendergrid { grid, selectedColumn } =
 
 subscriptions : Model -> Sub.Sub Msg
 subscriptions model =
-    if model.running then
-        (Time.every (bpmToMs model.bpm) Tick)
-    else
-        Sub.none
+    (Time.every (bpmToMs model.bpm) Tick)
 
 
 
