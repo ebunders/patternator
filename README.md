@@ -9,14 +9,14 @@ A very simple sequencer
 [X] cellen aanklikbaar
 [X] run! (highlight row)
 [X] controls: stop/start & rewind Icons with http://fontawesome.io/
-[ ] controls: bpm instellen
-[ ]
+[X] controls: bpm instellen 
 [ ] muziek (instrument)
 [ ] volume: drie stappen (accent)  
 [ ] meerdere patterns
 [ ] drum of melodie pattern
 [ ] song arranger
 [ ] instrument (voice) editor
+[ ] different time signatures (1/4, 1/8, triplet versions)
 
 ##Technical
 [X] use elm Matrix as a model:  http://package.elm-lang.org/packages/jreut/elm-grid/latest/Grid

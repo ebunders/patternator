@@ -25,24 +25,24 @@ main =
 -- MODEL
 
 
-model : Model
-model =
+initalModel : Model
+initalModel =
     { grid = matrix 12 16 (\_ -> False)
     , selectedColumn = 0
-    , speedMs = 200
+    , bpm = 100
     , running = False
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( model, Cmd.none )
+    ( initalModel, Cmd.none )
 
 
 type alias Model =
     { grid : Matrix Bool
     , selectedColumn : Int
-    , speedMs : Int
+    , bpm : Int
     , running : Bool
     }
 
@@ -53,9 +53,15 @@ type alias Model =
 
 type Msg
     = ToggleSelect Location
-    | ToggleTransport
-    | Rewind
+    | TransportMsg TransportMsgType
     | Tick Time.Time
+
+
+type TransportMsgType
+    = Rewind
+    | ToggleTransport
+    | BpmUp
+    | BpmDown
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -75,11 +81,24 @@ update msg model =
         Tick t ->
             ( { model | selectedColumn = (model.selectedColumn + 1) % 16 }, Cmd.none )
 
+        TransportMsg msg ->
+            handleTransportMsg msg model
+
+
+handleTransportMsg : TransportMsgType -> Model -> ( Model, Cmd Msg )
+handleTransportMsg msg model =
+    case msg of
         ToggleTransport ->
             ( { model | running = not model.running }, Cmd.none )
 
         Rewind ->
             ( { model | selectedColumn = 0 }, Cmd.none )
+
+        BpmUp ->
+            ( { model | bpm = (model.bpm + 1) }, Cmd.none )
+
+        BpmDown ->
+            ( { model | bpm = (model.bpm - 1) }, Cmd.none )
 
 
 
@@ -93,21 +112,25 @@ view model =
     div []
         [ h1 [] [ text "Patternator" ]
         , div [ (class "grid") ] (rendergrid model)
-        , div [ (class "button controls") ] (renderControls model.running)
+        , div [ (class "controls") ] (renderControls model)
         ]
 
 
-renderControls : Bool -> List (Html Msg)
-renderControls running =
+renderControls : Model -> List (Html Msg)
+renderControls model =
     let
         classes =
-            if running then
+            if model.running then
                 "fa fa-pause"
             else
                 "fa fa-play"
     in
-        [ i [ class classes, onClick ToggleTransport ] [ text "" ]
-        , i [ class "fa fa-fast-backward", onClick Rewind ] [ text "" ]
+        [ i [ class classes, onClick (TransportMsg ToggleTransport) ] [ text "" ]
+        , i [ class "fa fa-fast-backward", onClick (TransportMsg Rewind) ] [ text "" ]
+        , div [ class "separator" ] [ text "" ]
+        , i [ class "fa fa-arrow-down", onClick (TransportMsg BpmDown) ] [ text "" ]
+        , span [ class "bpm" ] [ text ("BPM: " ++ (toString model.bpm)) ]
+        , i [ class "fa fa-arrow-up", onClick (TransportMsg BpmUp) ] [ text "" ]
         ]
 
 
@@ -148,6 +171,51 @@ rendergrid { grid, selectedColumn } =
 subscriptions : Model -> Sub.Sub Msg
 subscriptions model =
     if model.running then
-        (Time.every ((toFloat model.speedMs) * Time.millisecond) Tick)
+        (Time.every (bpmToMs model.bpm) Tick)
     else
         Sub.none
+
+
+
+-- BPM
+
+
+type Signature
+    = Quarter
+    | Eight
+
+
+bpmToMs : Int -> Float
+bpmToMs bpm =
+    let
+        ticksPerMinute =
+            bpmToTickspm bpm Quarter
+
+        msPerMinute =
+            60000
+    in
+        msPerMinute / ticksPerMinute
+
+
+{-| Calculate ticks per minute:
+bpm = ticks * sig
+ticks = bpm / sig
+sig = bpm / ticks
+-}
+bpmToTickspm : Int -> Signature -> Float
+bpmToTickspm bpm signature =
+    let
+        sig =
+            sigToFloat signature
+    in
+        (toFloat bpm) / sig
+
+
+sigToFloat : Signature -> Float
+sigToFloat sig =
+    case sig of
+        Quarter ->
+            0.25
+
+        Eight ->
+            0.125
