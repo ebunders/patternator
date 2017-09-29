@@ -30,6 +30,7 @@ model =
     { grid = matrix 12 16 (\_ -> False)
     , selectedColumn = 0
     , speedMs = 200
+    , running = False
     }
 
 
@@ -42,6 +43,7 @@ type alias Model =
     { grid : Matrix Bool
     , selectedColumn : Int
     , speedMs : Int
+    , running : Bool
     }
 
 
@@ -51,6 +53,8 @@ type alias Model =
 
 type Msg
     = ToggleSelect Location
+    | ToggleTransport
+    | Rewind
     | Tick Time.Time
 
 
@@ -71,33 +75,11 @@ update msg model =
         Tick t ->
             ( { model | selectedColumn = (model.selectedColumn + 1) % 16 }, Cmd.none )
 
+        ToggleTransport ->
+            ( { model | running = not model.running }, Cmd.none )
 
-
--- todo these functions are too similar.
-
-
-mapGrid : Int -> Int -> List (List Bool) -> List (List Bool)
-mapGrid rowNr colNr grid =
-    List.indexedMap
-        (\i v ->
-            if i == rowNr then
-                mapRow colNr v
-            else
-                v
-        )
-        grid
-
-
-mapRow : Int -> List Bool -> List Bool
-mapRow colNr row =
-    List.indexedMap
-        (\i v ->
-            if i == colNr then
-                not v
-            else
-                v
-        )
-        row
+        Rewind ->
+            ( { model | selectedColumn = 0 }, Cmd.none )
 
 
 
@@ -111,7 +93,21 @@ view model =
     div []
         [ h1 [] [ text "Patternator" ]
         , div [ (class "grid") ] (rendergrid model)
-        , hr [] []
+        , div [ (class "button controls") ] (renderControls model.running)
+        ]
+
+
+renderControls : Bool -> List (Html Msg)
+renderControls running =
+    let
+        classes =
+            if running then
+                "fa fa-pause"
+            else
+                "fa fa-play"
+    in
+        [ i [ class classes, onClick ToggleTransport ] [ text "" ]
+        , i [ class "fa fa-fast-backward", onClick Rewind ] [ text "" ]
         ]
 
 
@@ -151,4 +147,7 @@ rendergrid { grid, selectedColumn } =
 
 subscriptions : Model -> Sub.Sub Msg
 subscriptions model =
-    (Time.every ((toFloat model.speedMs) * Time.millisecond) Tick)
+    if model.running then
+        (Time.every ((toFloat model.speedMs) * Time.millisecond) Tick)
+    else
+        Sub.none

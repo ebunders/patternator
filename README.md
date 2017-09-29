@@ -8,7 +8,7 @@ A very simple sequencer
 [X] kolom 1, 5, 9 & 13 ander kleurtje
 [X] cellen aanklikbaar
 [X] run! (highlight row)
-[ ] controls: stop/start Icons with http://fontawesome.io/
+[X] controls: stop/start & rewind Icons with http://fontawesome.io/
 [ ] controls: bpm instellen
 [ ]
 [ ] muziek (instrument)
