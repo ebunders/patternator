@@ -37,7 +37,8 @@ var commonConfig = {
         rules: [{
             test: /\.(eot|ttf|woff|woff2|svg)$/,
             use: 'file-loader?publicPath=../../&name=static/css/[hash].[ext]'
-        }]
+        },
+      ]
     },
     plugins: [
         new webpack.LoaderOptionsPlugin({

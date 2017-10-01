@@ -9,7 +9,7 @@ A very simple sequencer
 [X] cellen aanklikbaar
 [X] run! (highlight row)
 [X] controls: stop/start & rewind Icons with http://fontawesome.io/
-[X] controls: bpm instellen 
+[X] controls: bpm instellen
 [ ] muziek (instrument)
 [ ] volume: drie stappen (accent)  
 [ ] meerdere patterns
@@ -23,3 +23,12 @@ A very simple sequencer
 [X] Nice clean transformation from data grid to view grid.
 
 https://tonejs.github.io/
+
+
+Questions:
+It seems that 'subscriptions' is called after each event. This means that the
+timer is reset after each event. This becomes apparent when you rapidly press
+controls like bpm up.
+I tried to restrict the return of the time subscription to the update event for
+the tick, but it turns out that if you do not return the time subscription in
+consequence of another update, the timer stops.

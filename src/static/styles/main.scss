@@ -2,6 +2,9 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
 @import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
+$fa-font-path: "~font-awesome/fonts";
+@import '~font-awesome/scss/font-awesome.scss';
+
 // can add Boostrap overrides, additional Sass/CSS below...
 $primary-color: rgb(98, 178, 223);
 $softhighlight: rgb(169, 203, 212);
