@@ -1,0 +1,40 @@
+Converting Notes to Frequencies
+
+
+OK. To calculate any frequency, you need to know three things:
+
+
+First: The fact, that a tone (note ?, i'm from germany...), that sounds one octave higher has a dobbeld frequency.
+So, if e.g. C has a frequency of 264 Hz, C one octave higher has 264 Hz * 2 = 528 Hz...still one octave higher it is 528 Hz * 2 = 1056 Hz - and so on.
+Second, you need a start frequency of one special tone to create a function that calculates all the others.
+
+e.g. ("concert pitch") A = 440 Hz
+And last but not least: in music it is said, that one octave has 12 halftones. (7 white and 5 black keys ;-)... )
+
+Now, it is up to you, which halftone you suppose your concert pitch to be. On an normal (non-professional) piano keyboard concert pitch A would be the 58th one. which means, that there are still 4 lower octaves. (A is the 10th out of the 12, and 10 + 4*12 = 58)
+
+
+...all these mathamitical and musical theorie, sorry...
+
+Growing exponentially, the function has the following form: f(n) = k * a^n.
+
+You know, the 58th halftone has a freq of 440.
+One octave higher, the 70th halftone (58+12=70) has a dobbeled freq of 880.
+
+good. that means:
+
+440 = k * a^58 and
+
+880 = k * a^70
+
+Now you transform both equqtions to "k = ...", set them equal, and calculate a with 2^(1/12). Now you use the caclulated a in one equation to get k with 440 * 2^(-58/12).
+
+Now, you have your equation f = 440 * 2^(-58/12) * (2^(1/12))^n which is equal to:
+
+
+f = 440 * 2^((n - 58)/12)
+
+
+And that's it !
+
+I will give you some examples:

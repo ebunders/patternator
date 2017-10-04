@@ -1,14 +1,19 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Matrix exposing (Location, Matrix, loc, mapWithLocation, matrix, row)
+import MatrixUtil
 import Time
 
 
+-- Ports
 -- component import example
 -- APP
+
+
+port playNote : Int -> Cmd msg
 
 
 main : Program Never Model Msg
@@ -28,7 +33,7 @@ main =
 initalModel : Model
 initalModel =
     { grid = matrix 12 16 (\_ -> False)
-    , selectedColumn = 0
+    , selectedStep = 0
     , bpm = 100
     , running = False
     , blink = False
@@ -42,7 +47,7 @@ init =
 
 type alias Model =
     { grid : Matrix Bool
-    , selectedColumn : Int
+    , selectedStep : Int
     , bpm : Int
     , running : Bool
     , blink : Bool
@@ -82,21 +87,49 @@ update msg model =
 
         Tick t ->
             let
-                newSelectedColumn =
+                ( newSelectedStep, playNotes ) =
                     if model.running then
-                        (model.selectedColumn + 1) % 16
+                        ( (model.selectedStep + 1) % 16, True )
                     else
-                        model.selectedColumn
+                        ( model.selectedStep, False )
+
+                cmd =
+                    if playNotes then
+                        notesToCmds newSelectedStep model.grid
+                    else
+                        Cmd.none
             in
                 ( { model
-                    | selectedColumn = newSelectedColumn
+                    | selectedStep = newSelectedStep
                     , blink = not model.blink
                   }
-                , Cmd.none
+                , cmd
                 )
 
         TransportMsg msg ->
             handleTransportMsg msg model
+
+
+
+-- TODO: extract column from Matrix
+-- filter active notes, and convert them to note numbers
+-- create a list of playNote commands for each value
+-- batch commands
+
+
+notesToCmds : Int -> Matrix.Matrix Bool -> Cmd msg
+notesToCmds step grid =
+    case MatrixUtil.getColumn step grid of
+        Just list ->
+            list
+                |> List.indexedMap (\i b -> ( i, b ))
+                |> List.filter (\( i, b ) -> b)
+                |> List.map (\( i, b ) -> notetoFreq (i + 40))
+                |> List.map (\freq -> playNote freq)
+                |> Cmd.batch
+
+        Nothing ->
+            Cmd.none
 
 
 handleTransportMsg : TransportMsgType -> Model -> ( Model, Cmd Msg )
@@ -106,7 +139,7 @@ handleTransportMsg msg model =
             ( { model | running = not model.running }, Cmd.none )
 
         Rewind ->
-            ( { model | selectedColumn = 0 }, Cmd.none )
+            ( { model | selectedStep = 0 }, Cmd.none )
 
         BpmUp ->
             ( { model | bpm = (model.bpm + 1) }, Cmd.none )
@@ -155,9 +188,9 @@ renderControls model =
 
 
 rendergrid : Model -> List (Html Msg)
-rendergrid { grid, selectedColumn } =
+rendergrid { grid, selectedStep } =
     let
-        mapCell selectedColumn location selected =
+        mapCell selectedStep location selected =
             let
                 row =
                     Matrix.row location
@@ -166,7 +199,7 @@ rendergrid { grid, selectedColumn } =
                     Matrix.col location
 
                 classes =
-                    if selected || selectedColumn == col then
+                    if selected || selectedStep == col then
                         "cell selected"
                     else if col % 4 == 0 then
                         "cell accent"
@@ -177,7 +210,7 @@ rendergrid { grid, selectedColumn } =
     in
         grid
             -- transform cells to html
-            |> Matrix.mapWithLocation (mapCell selectedColumn)
+            |> Matrix.mapWithLocation (mapCell selectedStep)
             -- create list of lists (rows)
             |> Matrix.toList
             -- convert rows to divs
@@ -236,3 +269,10 @@ sigToFloat sig =
 
         Eight ->
             0.125
+
+
+{-| Calculate the frequency by the (midi) note number
+-}
+notetoFreq : Int -> Int
+notetoFreq note =
+    floor (440 * 2 ^ ((toFloat (note - 58)) / 12))
