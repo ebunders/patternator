@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "Patternator, browser sequencer",
-    "repository": "https://github.com/moarwick/elm-webpack-starter.git",
+    "summary": "Patternator is a browser based music sequencer",
+    "repository": "https://github.com/ebunders/patternator",
     "license": "MIT",
     "source-directories": [
         "src/elm"
