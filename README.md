@@ -25,10 +25,10 @@ This is my todo list:
 - [x] controls: set the bmp
 - [x] tones selected cells while playing
 - [ ] volume: three steps (accent)
-- [ ] stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
+- [ ] controls: stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
 - [ ] multiple patterns with switcher, switchover at the start of the next loop
 - [ ] three channels: drum + bass + chords
-- [ ] channel instrument (voice) editor
+- [ ] channel instrument (voice) editor with https://github.com/aterrien/jQuery-Kontrol
 - [ ] different time signatures (1/4, 1/8, triplet versions)
 - [ ] swing
 - [ ] glide, join notes
