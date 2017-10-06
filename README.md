@@ -1,36 +1,39 @@
 # Patternator
 
+A very simple pattern based sequencer. This is mainly an Elm learning project, but the goal is to have three channels:
+* base (monophonic)
+* melody (polyphonic)
+* drum
 
-A very simple sequencer
+Each channel has 9 patterns to choose from (easy copying will be supported). The instruments will have some controls, like:
+* filter settings
+* attack-decay
+* effects?
 
-##Functional
-[X] grid: 16 x 12
-[X] columns 1, 5, 9 & 13 different color
-[X] clickable cells
-[X] run! (highlight row)
-[X] controls: stop/start & rewind Icons with http://fontawesome.io/
-[X] controls: set the bmp
-[X] tones selected cells while playing
-[ ] volume: three steps (accent)
-[ ] note duration  
-[ ] multiple patterns with switcher, switchover at the start of the next loop
-[ ] three patterns: drum + bass + chords
-[ ] instrument (voice) editor
-[ ] different time signatures (1/4, 1/8, triplet versions)
-[ ] glide, noten verbinden
-[ ] song arranger (svg?)
+When all this is done, and I'm still in the mood, we could start thinking about a song builder, and perhaps some automation.
 
-##Technical
-[X] use elm Matrix as a model:  http://package.elm-lang.org/packages/jreut/elm-grid/latest/Grid
-[X] Nice clean transformation from data grid to view grid.
+The audio engine to back all this goodness is [Tone.js](https://tonejs.github.io/)
 
-https://tonejs.github.io/
+This is my todo list:
 
+## Functional
+- [x] grid: 16 x 12
+- [x] columns 1, 5, 9 & 13 different color
+- [x] clickable cells
+- [x] run! (highlight row)
+- [x] controls: stop/start & rewind Icons with http://fontawesome.io/
+- [x] controls: set the bmp
+- [x] tones selected cells while playing
+- [ ] volume: three steps (accent)
+- [ ] stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
+- [ ] multiple patterns with switcher, switchover at the start of the next loop
+- [ ] three channels: drum + bass + chords
+- [ ] channel instrument (voice) editor
+- [ ] different time signatures (1/4, 1/8, triplet versions)
+- [ ] swing
+- [ ] glide, join notes
+- [ ] song arranger (svg?)
 
-Questions:
-It seems that 'subscriptions' is called after each event. This means that the
-timer is reset after each event. This becomes apparent when you rapidly press
-controls like bpm up.
-I tried to restrict the return of the time subscription to the update event for
-the tick, but it turns out that if you do not return the time subscription in
-consequence of another update, the timer stops.
+## Technical
+- [x] use elm Matrix as a model:  http://package.elm-lang.org/packages/jreut/elm-grid/latest/Grid
+- [x] Nice clean transformation from data grid to view grid.
