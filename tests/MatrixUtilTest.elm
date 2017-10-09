@@ -1,4 +1,4 @@
-module MainTest exposing (..)
+module MatrixUtilTest exposing (..)
 
 import Expect exposing (Expectation)
 import Matrix exposing (matrix)

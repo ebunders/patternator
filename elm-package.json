@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Patternator is a browser based music sequencer",
-    "repository": "https://github.com/ebunders/patternator",
+    "repository": "https://github.com/ebunders/patternator.git",
     "license": "MIT",
     "source-directories": [
         "src/elm"

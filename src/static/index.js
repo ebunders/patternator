@@ -2,9 +2,6 @@
 require( './styles/main.scss' );
 snd = require('../js/sound.js');
 
-// snd.playNote(400, 1000);
-snd.playNote(400, 400);
-
 // inject bundled Elm app into div#main
 var Elm = require( '../elm/Main' );
 var app = Elm.Main.embed( document.getElementById( 'main' ) );
