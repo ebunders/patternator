@@ -14,7 +14,15 @@ When all this is done, and I'm still in the mood, we could start thinking about 
 
 The audio engine to back all this goodness is [Tone.js](https://tonejs.github.io/)
 
-This is my todo list:
+## How to run?
+After cloning the repo:
+```
+npm install
+elm package install
+npm start
+```
+
+Feature implementation list:
 
 ## Functional
 - [x] grid: 16 x 12
@@ -26,6 +34,7 @@ This is my todo list:
 - [x] tones selected cells while playing
 - [ ] volume: three steps (accent)
 - [ ] controls: stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
+- [ ] keyboard support (space- play/stop, stutter, rewind)
 - [ ] multiple patterns with switcher, switchover at the start of the next loop
 - [ ] three channels: drum + bass + chords
 - [ ] channel instrument (voice) editor with https://github.com/aterrien/jQuery-Kontrol
