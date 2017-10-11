@@ -1,6 +1,6 @@
-module MatrixUtil exposing (getRow, getColumn, listOfMaybeToMaybeOfList)
+module MatrixUtil exposing (getRow, getColumn, mapCell, listOfMaybeToMaybeOfList)
 
-import Matrix exposing (Matrix)
+import Matrix exposing (Location, Matrix, matrix)
 
 
 getRow : Int -> Matrix a -> Maybe (List a)
@@ -26,6 +26,18 @@ getColumn index aMatrix =
 indexInRange : Int -> Int -> Bool
 indexInRange index size =
     index >= 0 && index < size
+
+
+mapCell : Location -> (a -> a) -> Matrix a -> Matrix a
+mapCell location fn matrix =
+    Matrix.mapWithLocation
+        (\aLoc anA ->
+            if aLoc == location then
+                (fn anA)
+            else
+                anA
+        )
+        matrix
 
 
 

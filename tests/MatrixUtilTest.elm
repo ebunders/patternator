@@ -1,7 +1,7 @@
 module MatrixUtilTest exposing (..)
 
 import Expect exposing (Expectation)
-import Matrix exposing (matrix)
+import Matrix exposing (Location, loc, matrix)
 import MatrixUtil exposing (listOfMaybeToMaybeOfList)
 import Test exposing (..)
 
@@ -9,6 +9,16 @@ import Test exposing (..)
 matrix : Matrix.Matrix Int
 matrix =
     Matrix.fromList [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
+
+
+locationInMatrix : Location
+locationInMatrix =
+    loc 2 2
+
+
+locationOffMatrix : Location
+locationOffMatrix =
+    loc 4 4
 
 
 justList : List (Maybe Int)
@@ -45,8 +55,7 @@ suite =
             , test "Nothing when the column index is under 0" <|
                 \_ -> Expect.equal Nothing (MatrixUtil.getColumn -1 matrix)
             , test "the first row as a list" <|
-                \_ ->
-                    Expect.equal (Just [ 1, 2, 3 ]) (MatrixUtil.getRow 0 matrix)
+                \_ -> Expect.equal (Just [ 1, 2, 3 ]) (MatrixUtil.getRow 0 matrix)
             , test "the second row as a list" <|
                 \_ -> Expect.equal (Just [ 4, 5, 6 ]) (MatrixUtil.getRow 1 matrix)
             , test "the third row as a list" <|
@@ -55,5 +64,25 @@ suite =
                 \_ -> Expect.equal Nothing (MatrixUtil.getRow 3 matrix)
             , test "Nothing when the row index is under 0" <|
                 \_ -> Expect.equal Nothing (MatrixUtil.getRow -1 matrix)
+            ]
+        , describe "mapping specific matrix cells"
+            [ test "we can update a cell if the location is inside the matrix" <|
+                \_ ->
+                    Expect.equal [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 100 ] ]
+                        (Matrix.toList
+                            (MatrixUtil.mapCell
+                                locationInMatrix
+                                (\_ -> 100)
+                                matrix
+                            )
+                        )
+            , test "updating with a location outside the matrix has no effect" <|
+                \_ ->
+                    Expect.equal matrix
+                        (MatrixUtil.mapCell
+                            locationOffMatrix
+                            (\_ -> 100)
+                            matrix
+                        )
             ]
         ]

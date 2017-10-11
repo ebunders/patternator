@@ -32,9 +32,9 @@ Feature implementation list:
 - [x] controls: stop/start & rewind Icons with http://fontawesome.io/
 - [x] controls: set the bmp
 - [x] tones selected cells while playing
-- [ ] volume: three steps (accent)
+- [x] volume: three steps (accent)
+- [ ] keyboard support (space- play/stop, rewind)
 - [ ] controls: stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
-- [ ] keyboard support (space- play/stop, stutter, rewind)
 - [ ] multiple patterns with switcher, switchover at the start of the next loop
 - [ ] three channels: drum + bass + chords
 - [ ] channel instrument (voice) editor with https://github.com/aterrien/jQuery-Kontrol

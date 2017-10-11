@@ -7,6 +7,6 @@ var Elm = require( '../elm/Main' );
 var app = Elm.Main.embed( document.getElementById( 'main' ) );
 console.log("app:", app);
 
-app.ports.playNote.subscribe(function(freq){
-  snd.playNote(freq, 200);
+app.ports.playNote.subscribe(function(note){
+  snd.playNote(note, 200);
 });

@@ -7,9 +7,13 @@ var synth = new Tone.PolySynth(6, Tone.Synth, {
 	}
 }).toMaster();
 
+document.synt = synth
 
-function playNote (freq, duration){
-  synth.triggerAttack(freq);
+
+function playNote (note, duration){
+	var freq = note.frequency;
+	var velo = note.velocity;
+  synth.triggerAttack(freq, undefined, velo);
   setTimeout(function(){endNote(freq);}, duration);
 }
 

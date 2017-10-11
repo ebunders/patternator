@@ -1,5 +1,6 @@
 port module Main exposing (..)
 
+import Debug exposing (log)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -13,7 +14,11 @@ import Time
 -- APP
 
 
-port playNote : Int -> Cmd msg
+type alias Note =
+    { frequency : Int, velocity : Float }
+
+
+port playNote : Note -> Cmd msg
 
 
 main : Program Never Model Msg
@@ -30,9 +35,82 @@ main =
 -- MODEL
 
 
+type alias Model =
+    { grid : Matrix Cell
+    , selectedStep : Int
+    , bpm : Int
+    , running : Bool
+    , blink : Bool
+    }
+
+
+type Cell
+    = Empty
+    | Off
+    | Soft
+    | Medium
+    | Strong
+
+
+
+-- empty cells switch to medium when turend on, afther that they cycle through
+-- soft, medium, strong, off, ..
+
+
+nextCellValue : Cell -> Cell
+nextCellValue cell =
+    case cell of
+        Empty ->
+            Medium
+
+        Off ->
+            Soft
+
+        Soft ->
+            Medium
+
+        Medium ->
+            Strong
+
+        Strong ->
+            Off
+
+
+cellToString : Cell -> String
+cellToString cell =
+    case cell of
+        Soft ->
+            "soft"
+
+        Medium ->
+            "medium"
+
+        Strong ->
+            "strong"
+
+        _ ->
+            "off"
+
+
+cellToVelocity : Cell -> Float
+cellToVelocity cell =
+    case cell of
+        Soft ->
+            0.3
+
+        Medium ->
+            0.6
+
+        Strong ->
+            1.0
+
+        _ ->
+            0
+
+
 initalModel : Model
 initalModel =
-    { grid = matrix 12 16 (\_ -> False)
+    { grid = matrix 12 16 (\_ -> Empty)
     , selectedStep = 0
     , bpm = 100
     , running = False
@@ -45,21 +123,12 @@ init =
     ( initalModel, Cmd.none )
 
 
-type alias Model =
-    { grid : Matrix Bool
-    , selectedStep : Int
-    , bpm : Int
-    , running : Bool
-    , blink : Bool
-    }
-
-
 
 -- UPDATE
 
 
 type Msg
-    = ToggleSelect Location
+    = ToggleSelect Location Cell
     | TransportMsg TransportMsgType
     | Tick Time.Time
 
@@ -74,16 +143,12 @@ type TransportMsgType
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ToggleSelect location ->
-            let
-                newValue =
-                    not (Maybe.withDefault False (Matrix.get location model.grid))
-            in
-                ( { model
-                    | grid = Matrix.set location newValue model.grid
-                  }
-                , Cmd.none
-                )
+        ToggleSelect location newCell ->
+            ( { model
+                | grid = (Matrix.set location newCell model.grid)
+              }
+            , Cmd.none
+            )
 
         Tick t ->
             let
@@ -111,21 +176,27 @@ update msg model =
 
 
 
--- TODO: extract column from Matrix
--- filter active notes, and convert them to note numbers
--- create a list of playNote commands for each value
--- batch commands
+{--
+We have to send the velocity along with the
+--}
 
 
-notesToCmds : Int -> Matrix.Matrix Bool -> Cmd msg
+notesToCmds : Int -> Matrix.Matrix Cell -> Cmd msg
 notesToCmds step grid =
     case MatrixUtil.getColumn step grid of
         Just list ->
-            list
-                |> List.indexedMap (\i b -> ( i, b ))
-                |> List.filter (\( i, b ) -> b)
-                |> List.map (\( i, b ) -> notetoFreq (i + 40))
-                |> List.map (\freq -> playNote freq)
+            List.reverse list
+                |> List.indexedMap (\i cell -> ( i, cell ))
+                |> List.filter
+                    (\( i, cell ) ->
+                        if cell == Off || cell == Empty then
+                            False
+                        else
+                            True
+                    )
+                |> List.map (\( i, cell ) -> ( i, (cellToVelocity cell) ))
+                |> List.map (\( i, vel ) -> ( notetoFreq (i + 40), vel ))
+                |> List.map (\( freq, vel ) -> (playNote { frequency = freq, velocity = vel }))
                 |> Cmd.batch
 
         Nothing ->
@@ -190,23 +261,24 @@ renderControls model =
 rendergrid : Model -> List (Html Msg)
 rendergrid { grid, selectedStep } =
     let
-        mapCell selectedStep location selected =
+        mapCell selectedStep location cell =
             let
-                row =
-                    Matrix.row location
-
                 col =
                     Matrix.col location
 
                 classes =
-                    if selected || selectedStep == col then
-                        "cell selected"
-                    else if col % 4 == 0 then
-                        "cell accent"
-                    else
-                        "cell"
+                    [ "cell"
+                    , (cellToString cell)
+                    , if selectedStep == col then
+                        "selected"
+                      else if col % 4 == 0 then
+                        "accent"
+                      else
+                        ""
+                    ]
+                        |> List.filter (\s -> not (String.isEmpty s))
             in
-                div [ (class classes), (onClick (ToggleSelect location)) ] []
+                div [ (class (String.join " " classes)), (onClick (ToggleSelect location (nextCellValue cell))) ] []
     in
         grid
             -- transform cells to html

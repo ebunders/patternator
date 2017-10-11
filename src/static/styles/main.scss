@@ -7,9 +7,13 @@ $fa-font-path: "~font-awesome/fonts";
 
 // can add Boostrap overrides, additional Sass/CSS below...
 $primary-color: rgb(98, 178, 223);
-$softhighlight: rgb(169, 203, 212);
+$softhighlight: rgb(97, 111, 115);
 $highlight: rgb(241, 252, 255);
 $font-stack:    Helvetica, sans-serif;
+
+$cell-soft: rgb(120, 37, 6);
+$cell-medium: rgb(177, 117, 0);
+$cell-strong: rgb(254, 211, 155);
 
 body {
   font-size: 20px;
@@ -21,13 +25,17 @@ body {
 .grid {
   .row {
     .cell{
-        border: 1px solid white;
+        border: 4px solid $softhighlight;
         margin: 3px;
         height: 50px;
         width: 50px;
         display: inline-block;
         border-radius: 5px;
+
     }
+    .soft {background-color: $cell-soft;}
+    .medium {background-color: $cell-medium;}
+    .strong {background-color: $cell-strong;}
   }
 }
 
