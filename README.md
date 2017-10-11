@@ -22,6 +22,15 @@ elm package install
 npm start
 ```
 
+## How to run the unit tests?
+First you have to install elm test (if you don't have it yet)
+```
+sudo npm install -g elm-test
+```
+Then you can just run
+```elm test```
+at the project root.
+
 Feature implementation list:
 
 ## Functional
@@ -31,7 +40,7 @@ Feature implementation list:
 - [x] run! (highlight row)
 - [x] controls: stop/start & rewind Icons with http://fontawesome.io/
 - [x] controls: set the bmp
-- [x] tones selected cells while playing
+- [x] selected cells are creating sound
 - [x] volume: three steps (accent)
 - [ ] keyboard support (space- play/stop, rewind)
 - [ ] controls: stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
