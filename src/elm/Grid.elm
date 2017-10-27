@@ -2,8 +2,10 @@ module Grid exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onCheck, onClick)
 import Matrix exposing (Location, Matrix)
+import MatrixUtil
+import Util exposing (joinStrings)
 
 
 {-| This module handles grids
@@ -83,6 +85,7 @@ type Msg
     = Tick
     | ToggleSelect Location
     | SetVelocity Col Velocity
+    | Rewind
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -129,6 +132,49 @@ update msg model =
                 , Cmd.none
                 )
 
+        Rewind ->
+            ( { model | selectedStep = 0 }
+            , Cmd.none
+            )
+
+
+{-| Get the notes and the velocity for the current step of a grid
+It takes a grid model
+It returns a tuple of a Velocity for the step, and
+a List of note numbers, where the bottom row of the grid represents a 0
+-}
+notesAndVelocity : Model -> ( Velocity, List Int )
+notesAndVelocity model =
+    let
+        velocity =
+            Maybe.withDefault Medium <|
+                (model.velocities
+                    |> List.drop model.selectedStep
+                    |> List.head
+                )
+
+        notes =
+            (Maybe.withDefault [] <| MatrixUtil.getColumn model.selectedStep model.grid)
+                |> List.reverse
+                |> List.indexedMap (\i cell -> ( i, cell ))
+                |> List.filter (\( i, cell ) -> cell == On)
+                |> List.map (\( i, cell ) -> i)
+    in
+        ( velocity, notes )
+
+
+nextVelocity : Velocity -> Velocity
+nextVelocity velocity =
+    case velocity of
+        Soft ->
+            Medium
+
+        Medium ->
+            Strong
+
+        Strong ->
+            Soft
+
 
 
 -- View
@@ -145,7 +191,7 @@ renderGrid model =
                 -- create list of lists (rows)
                 |> Matrix.toList
                 -- convert rows to divs
-                |> List.map (\row -> div [ (class "row") ] row)
+                |> List.map (\row -> div [ (class "gridrow") ] row)
     in
         gridrowsAshtml
             |> (addVelocityRow model.velocities)
@@ -155,16 +201,27 @@ renderGrid model =
 addVelocityRow : List Velocity -> List (Html Msg) -> List (Html Msg)
 addVelocityRow velocities rows =
     let
-        stylesForVelocity velocity =
+        stylesForVelocityState : Velocity -> List String
+        stylesForVelocityState velocity =
             case velocity of
                 Soft ->
-                    [ "on", "off", "off" ]
+                    [ "off", "off", "on" ]
 
                 Medium ->
-                    [ "off", "on", "off" ]
+                    [ "off", "on", "on" ]
 
                 Strong ->
-                    [ "off", "off", "on" ]
+                    [ "on", "on", "on" ]
+
+        styleForVelocityLevel =
+            [ "strong", "medium", "soft" ]
+
+        styleForVelocity : Velocity -> List String
+        styleForVelocity velocity =
+            List.map2 (\a b -> [ a, b ])
+                (stylesForVelocityState velocity)
+                styleForVelocityLevel
+                |> List.map (joinStrings " ")
 
         velocitiesAsHtml =
             velocities
@@ -172,16 +229,16 @@ addVelocityRow velocities rows =
                     (\i v ->
                         let
                             velClasses =
-                                stylesForVelocity v
+                                styleForVelocity v
                         in
-                            div [ (class "velocity") ]
+                            div [ (class "velocity"), (onClick (SetVelocity i (nextVelocity v))) ]
                                 (velClasses
                                     |> List.map (\vc -> div [ (class vc) ] [])
                                 )
                     )
                 |> (\list -> div [ class "velocities" ] list)
     in
-        rows
+        velocitiesAsHtml :: rows
 
 
 mapCell : Int -> Int -> Location -> Cell -> Html Msg
@@ -197,7 +254,12 @@ mapCell selectedStep notesPerBar location cell =
               else if col % 4 == 0 then
                 "accent"
               else
-                ""
+                case cell of
+                    On ->
+                        "on"
+
+                    Off ->
+                        ""
             ]
                 |> List.filter (\s -> not (String.isEmpty s))
     in

@@ -11,8 +11,10 @@ document.synt = synth
 
 
 function playNote (note, duration){
-	var freq = note.frequency;
+	console.log(JSON.stringify(note))
+	var freq = note.frequencies;
 	var velo = note.velocity;
+	console.log("playing notes: " + freq + " with velocity " + velo)
   synth.triggerAttack(freq, undefined, velo);
   setTimeout(function(){endNote(freq);}, duration);
 }
