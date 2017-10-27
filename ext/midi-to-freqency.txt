@@ -37,4 +37,5 @@ f = 440 * 2^((n - 58)/12)
 
 And that's it !
 
-I will give you some examples:
+freq of c0 = 16.35
+so f = 16.35 * 2^(n/12)

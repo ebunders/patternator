@@ -51,6 +51,10 @@ var commonConfig = {
             inject: 'body',
             filename: 'index.html'
         })
+        // ,
+        // new webpack.ProvidePlugin({
+        //     _: 'underscore'
+        // })
     ]
 }
 

@@ -1,0 +1,8 @@
+To set the wave form for a Tone.PolySynth:
+- Polysynt.voices = [Tone.Synth]
+- synth.oscillator = Tone.OmniOscilator
+- oscillator.type =  sine, square, triangle, sawtooth
+
+so:
+_.each(synth.voices, function(v){v.oscillator.type ='triangle';})
+synth.set('oscillator.type', 'sine')
