@@ -22,20 +22,38 @@ body {
   padding: 20px;
 }
 
-.grid {
-  .row {
-    .cell{
-        border: 4px solid $softhighlight;
-        margin: 3px;
-        height: 50px;
-        width: 50px;
-        display: inline-block;
-        border-radius: 5px;
+@mixin cell($radius) {
+  border: 4px solid $softhighlight;
+  margin: 3px;
+  height: 50px;
+  width: 50px;
+  display: inline-block;
+  border-radius: $radius;
+}
 
+.grid {
+  .gridrow {
+    .cell{
+        @include cell(5px);
     }
-    .soft {background-color: $cell-soft;}
-    .medium {background-color: $cell-medium;}
-    .strong {background-color: $cell-strong;}
+    .on {background-color: $cell-strong;}
+  }
+  .velocities {
+    .velocity {
+      @include cell(5px);
+      div {
+        width: 34px;
+        height: 10px;
+        margin: 5px;
+        border: 1px solid $softhighlight
+      }
+      // div.soft.on {background-color: $softhighlight; }
+
+      div.on {background-color: $primary-color; }
+
+      // div.strong.on {background-color: $highlight; }
+    }
+
   }
 }
 

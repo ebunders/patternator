@@ -1,6 +1,7 @@
-module MatrixUtil exposing (getRow, getColumn, mapCell, listOfMaybeToMaybeOfList)
+module MatrixUtil exposing (getRow, getColumn, mapCell)
 
 import Matrix exposing (Location, Matrix, matrix)
+import Util exposing (listOfMaybeToMaybeOfList)
 
 
 getRow : Int -> Matrix a -> Maybe (List a)
@@ -38,29 +39,3 @@ mapCell location fn matrix =
                 anA
         )
         matrix
-
-
-
--- TODO: dit kan vermoedelijk veel beter met `Maybe.map head`
-
-
-listOfMaybeToMaybeOfList : List (Maybe a) -> Maybe (List a)
-listOfMaybeToMaybeOfList list =
-    let
-        head =
-            (List.head list)
-
-        rest =
-            (List.drop 1 list)
-    in
-        case head of
-            Just aMaybeA ->
-                case aMaybeA of
-                    Just a ->
-                        listOfMaybeToMaybeOfList rest |> Maybe.map (\l -> a :: l)
-
-                    Nothing ->
-                        Nothing
-
-            Nothing ->
-                Just []
