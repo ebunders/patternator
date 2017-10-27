@@ -247,8 +247,14 @@ mapCell selectedStep notesPerBar location cell =
         col =
             Matrix.col location
 
+        c =
+            if cell == On then
+                "cell on"
+            else
+                "cell"
+
         classes =
-            [ "cell"
+            [ c
             , if selectedStep == col then
                 "selected"
               else if col % 4 == 0 then

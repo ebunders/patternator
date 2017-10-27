@@ -21,5 +21,10 @@ function endNote(freq){
   synth.triggerRelease(freq);
 }
 
+function melodyWaveform(waveform){
+	synth.set('oscillator.type', waveform)
+}
+
 // export {playNote};
-module.exports = {'playNote': playNote};
+module.exports = {'playNote': playNote ,
+									'melodyWaveform': melodyWaveform};

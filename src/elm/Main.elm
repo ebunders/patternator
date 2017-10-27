@@ -1,9 +1,10 @@
 port module Main exposing (..)
 
-import Grid exposing (GridType, GridType(Melody), Velocity(Soft, Medium, Strong), initModel)
+import Grid exposing (GridType(Melody), Velocity(Soft, Medium, Strong))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Melody exposing (renderControls)
 import Time
 
 
@@ -35,6 +36,7 @@ main =
 
 type alias Model =
     { grid : Grid.Model
+    , melody : Melody.Model
     , bpm : Int
     , running : Bool
     , blink : Bool
@@ -44,6 +46,7 @@ type alias Model =
 initalModel : Model
 initalModel =
     { grid = (Grid.initModel Melody 12 16 4)
+    , melody = Melody.initModel
     , bpm = 100
     , running = False
     , blink = False
@@ -61,6 +64,7 @@ init =
 
 type Msg
     = GridMessage Grid.Msg
+    | MelodyMessage Melody.Msg
     | TransportMsg TransportMsgType
     | Tick Time.Time
 
@@ -81,6 +85,13 @@ update msg model =
                     Grid.update msg model.grid
             in
                 ( { model | grid = gridModel }, (Cmd.map GridMessage gridCmd) )
+
+        MelodyMessage msg ->
+            let
+                ( melodyModel, melodyCmd ) =
+                    Melody.update msg model.melody
+            in
+                ( { model | melody = melodyModel }, Cmd.map MelodyMessage melodyCmd )
 
         Tick t ->
             let
@@ -170,7 +181,10 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Patternator" ]
-        , div [ (class "grid") ] [ (Html.map GridMessage <| Grid.renderGrid model.grid) ]
+        , div []
+            [ div [ (class "grid") ] [ (Html.map GridMessage <| Grid.renderGrid model.grid) ]
+            , div [ (class "instrument") ] [ (Html.map MelodyMessage <| Melody.renderControls model.melody) ]
+            ]
         , div [ (class "controls") ] (renderControls model)
         ]
 

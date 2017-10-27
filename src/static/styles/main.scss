@@ -32,6 +32,7 @@ body {
 }
 
 .grid {
+  display: inline-block;
   .gridrow {
     .cell{
         @include cell(5px);
@@ -56,6 +57,28 @@ body {
 
   }
 }
+
+.instrument{
+  display: inline-block;
+  vertical-align: top;
+  @include cell(5px);
+  width: 150px;
+  height: 600px;
+  border: 3px solid $softhighlight;
+  padding-left: 10px;
+  .melody {
+    .waveform {
+      .tick span:first-of-type{
+        @include cell(4px)
+        width: 20px;
+        height: 20px;
+        vertical-align: bottom;
+      }
+    }
+
+  }
+}
+
 
 .controls {
   border: 1px solid white;

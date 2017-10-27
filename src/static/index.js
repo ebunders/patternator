@@ -11,3 +11,7 @@ console.log("app:", app);
 app.ports.playNote.subscribe(function(note){
   snd.playNote(note, 200);
 });
+
+app.ports.melodyWaveform.subscribe(function(waveform){
+  snd.melodyWaveform(waveform)
+})
