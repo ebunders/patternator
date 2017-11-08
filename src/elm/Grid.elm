@@ -67,14 +67,18 @@ type alias Col =
   - notes per bar (for visual accent)
 
 -}
-initModel : GridType -> Int -> Int -> Int -> Model
+initModel : GridType -> Int -> Int -> Int -> ( Model, Cmd msg )
 initModel gridType rows cols notesPerBar =
-    { grid = Matrix.fromList (List.repeat rows (List.repeat cols Off))
-    , velocities = (List.repeat cols Medium)
-    , gridType = gridType
-    , notesPerBar = notesPerBar
-    , selectedStep = 0
-    }
+    let
+        model =
+            { grid = Matrix.fromList (List.repeat rows (List.repeat cols Off))
+            , velocities = (List.repeat cols Medium)
+            , gridType = gridType
+            , notesPerBar = notesPerBar
+            , selectedStep = 0
+            }
+    in
+        ( model, Cmd.none )
 
 
 

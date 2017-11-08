@@ -46,7 +46,7 @@ Feature implementation list:
 - [ ] controls: stutter: loop on note while pressed, continue at the 'would have been' point after release (so the beat is not broken)
 - [ ] multiple patterns with switcher, switchover at the start of the next loop
 - [ ] three channels: drum + bass + chords
-- [ ] channel instrument (voice) editor with https://github.com/aterrien/jQuery-Kontrol
+- [ ] channel instrument (voice) editor with https://github.com/aterrien/jQuery-Kontrol ()
 - [ ] different time signatures (1/4, 1/8, triplet versions)
 - [ ] swing
 - [ ] glide, join notes

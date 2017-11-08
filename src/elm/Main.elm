@@ -43,19 +43,42 @@ type alias Model =
     }
 
 
-initalModel : Model
-initalModel =
-    { grid = (Grid.initModel Melody 12 16 4)
-    , melody = Melody.initModel
-    , bpm = 100
-    , running = False
-    , blink = False
-    }
+
+-- initalModel : Model
+-- initalModel =
+--     { grid = (Grid.initModel Melody 12 16 4)
+--     , melody = Melody.initModel
+--     , bpm = 100
+--     , running = False
+--     , blink = False
+--     }
+-- TODO: for the different models: call initmodel too, and batch the commands
+-- This way we can receive a port cmd from the Control module (to attach the javascrit)
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initalModel, Cmd.none )
+    let
+        ( gridModel, gridCmd ) =
+            (Grid.initModel Melody 12 16 4)
+
+        ( melodyModel, melodyCmd ) =
+            Melody.initModel
+
+        model =
+            { grid = gridModel
+            , melody = melodyModel
+            , bpm = 100
+            , running = False
+            , blink = False
+            }
+    in
+        ( model
+        , Cmd.batch
+            [ (Cmd.map GridMessage gridCmd)
+            , (Cmd.map MelodyMessage melodyCmd)
+            ]
+        )
 
 
 
@@ -219,7 +242,14 @@ renderControls model =
 
 subscriptions : Model -> Sub.Sub Msg
 subscriptions model =
-    (Time.every (bpmToMs model.bpm) Tick)
+    let
+        melodySubs =
+            Sub.map MelodyMessage (Melody.subscriptions model.melody)
+    in
+        Sub.batch
+            [ (Time.every (bpmToMs model.bpm) Tick)
+            , melodySubs
+            ]
 
 
 
