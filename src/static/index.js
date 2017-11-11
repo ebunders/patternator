@@ -12,12 +12,15 @@ app.ports.playNote.subscribe(function (note) {
 })
 
 app.ports.melodyWaveform.subscribe(function (waveform) {
-  melody.melodyWaveform(waveform)
+  melody.setWaveform(waveform)
 })
 
 app.ports.melodyInitKnob.subscribe(function (knobModel) {
   control.initKnob(knobModel, function (id, value) {
     app.ports.melodyUpdateKnob.send(
-      {'id': id, 'value': Math.floor(value)})
+      {'id': id, 'value': value})
   })
 })
+
+app.ports.melodySetAttack.subscribe(melody.updateAttack)
+app.ports.melodySetRelease.subscribe(melody.updateRelease)

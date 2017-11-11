@@ -27,7 +27,7 @@ function curryCallback (id, callback) {
 }
 
 function initKnob (knobModel, callback) {
-  createButton(knobModel.minValue, knobModel.maxValue, 1, knobModel.id, callback)
+  createButton(knobModel.minValue, knobModel.maxValue, 0.01, knobModel.id, callback)
 }
 
 module.exports = {

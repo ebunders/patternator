@@ -14,12 +14,18 @@ port melodyInitKnob : KnobModel -> Cmd msg
 port melodyUpdateKnob : (KnobValueUpdate -> msg) -> Sub msg
 
 
+port melodySetAttack : Float -> Cmd msg
+
+
+port melodySetRelease : Float -> Cmd msg
+
+
 type alias ID =
     String
 
 
 type alias KnobValue =
-    Int
+    Float
 
 
 type alias KnobModel =
@@ -68,17 +74,17 @@ initModel =
     let
         attackModel =
             { id = "id_attack"
-            , minValue = 0
-            , maxValue = 256
-            , value = 0
+            , minValue = 0.0
+            , maxValue = 1.0
+            , value = 0.0
             , label = "Attack"
             }
 
         releaseModel =
             { id = "id_release"
-            , minValue = 0
-            , maxValue = 256
-            , value = 0
+            , minValue = 0.0
+            , maxValue = 1.0
+            , value = 0.0
             , label = "Release"
             }
 
@@ -107,20 +113,42 @@ update msg model =
 
         UpdateKnob valueUpdate ->
             let
-                test =
-                    Debug.log "update knob" "foo bar"
-
-                knobs =
+                -- TODO: this sucks totally!
+                knobsAndCmds : List ( KnobModel, Cmd msg )
+                knobsAndCmds =
                     model.knobs
                         |> List.map
                             (\knob ->
                                 if valueUpdate.id == knob.id then
-                                    { knob | value = valueUpdate.value }
+                                    let
+                                        updatedKnob =
+                                            { knob | value = valueUpdate.value }
+                                    in
+                                        ( updatedKnob, knobToCmd updatedKnob )
                                 else
-                                    knob
+                                    ( knob, Cmd.none )
                             )
             in
-                ( { model | knobs = knobs }, Cmd.none )
+                ( { model | knobs = (List.map Tuple.first knobsAndCmds) }
+                , Cmd.batch (List.map Tuple.second knobsAndCmds)
+                )
+
+
+
+--TODO this sucks!
+
+
+knobToCmd : KnobModel -> Cmd msg
+knobToCmd knob =
+    case knob.id of
+        "id_attack" ->
+            melodySetAttack knob.value
+
+        "id_release" ->
+            melodySetRelease knob.value
+
+        x ->
+            Debug.crash ("Knob id " ++ x ++ " is not supported")
 
 
 waveformToLabel : Waveform -> String
@@ -153,7 +181,6 @@ renderKnob model =
     div [ (class "controls") ]
         [ h4 [] [ (text model.label) ]
         , div [ (class "control"), (id model.id) ] [ text "" ]
-        , div [] [ text (toString model.value) ]
         ]
 
 
